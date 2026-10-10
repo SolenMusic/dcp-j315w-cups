@@ -6,6 +6,8 @@ RUN if command -v apt-get >/dev/null; then \
       dnf install -y cups cups-client cups-filters ghostscript cups-devel python3 file; \
     elif command -v pacman >/dev/null; then \
       pacman -Syu --noconfirm --needed cups cups-filters ghostscript python file qpdf; \
+    elif command -v zypper >/dev/null; then \
+      zypper --non-interactive install cups cups-client cups-filters ghostscript cups-devel python3 file; \
     else exit 1; fi
 WORKDIR /source
 COPY . .

@@ -4,7 +4,7 @@ set -euo pipefail
 root=$(cd -- "$(dirname -- "$0")" && pwd)
 cd "$root"
 if [[ $# != 2 ]]; then
-  echo 'Usage: ./package.sh macos|linux-debian|linux-fedora|linux-arch x86_64|arm64' >&2
+  echo 'Usage: ./package.sh macos|linux-debian|linux-fedora|linux-arch|linux-opensuse|linux-alpine x86_64|arm64' >&2
   exit 1
 fi
 platform=$1
@@ -12,10 +12,15 @@ arch=$2
 case "$arch" in x86_64|arm64) ;; *) echo 'Unsupported CPU.' >&2; exit 1 ;; esac
 case "$platform" in
   macos) [[ $(uname -s) == Darwin ]]; lipo rastertodcpj315w -verify_arch "$arch" ;;
-  linux-debian|linux-fedora|linux-arch)
+  linux-debian|linux-fedora|linux-arch|linux-opensuse|linux-alpine)
     [[ $(uname -s) == Linux ]]
     description=$(file -b rastertodcpj315w)
-    case "$arch:$description" in x86_64:*ELF*x86-64*|arm64:*ELF*aarch64*) ;; *) echo 'Wrong executable architecture.' >&2; exit 1 ;; esac ;;
+    case "$arch:$description" in x86_64:*ELF*x86-64*|arm64:*ELF*aarch64*) ;; *) echo 'Wrong executable architecture.' >&2; exit 1 ;; esac
+    case "$platform:$description" in
+      linux-alpine:*ld-musl*) ;;
+      linux-alpine:*) echo 'Alpine releases must be built against musl.' >&2; exit 1 ;;
+      *ld-musl*) echo 'Use linux-alpine for a musl executable.' >&2; exit 1 ;;
+    esac ;;
   *) echo 'Unsupported release platform.' >&2; exit 1 ;;
 esac
 read -r version < VERSION

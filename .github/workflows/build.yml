@@ -86,12 +86,62 @@ jobs:
           # libcupsfilters 2.2.x/PDFio can silently discard compound-filter
           # content streams. Exercise the documented qpdf workaround explicitly.
           docker run --rm dcp-j315w-arch-check /bin/bash -c 'qpdf --stream-data=uncompress fixtures/print-options.pdf /tmp/normalized.pdf && DCPJ315W_PDF=/tmp/normalized.pdf python3 test_linux.py && python3 test_installation_linux.py'
+      - name: openSUSE runtime and installation
+        run: |
+          docker build --build-arg RUNTIME_IMAGE=registry.opensuse.org/opensuse/tumbleweed:latest -f Dockerfile.runtime-test -t dcp-j315w-opensuse-check .
+          docker run --rm dcp-j315w-opensuse-check
       - name: Package distribution flavours
         run: |
           mkdir -p dist
-          docker run --rm -v "$PWD/dist:/source/dist" dcp-j315w-release /bin/bash -c './package.sh linux-debian ${{ matrix.arch }} && ./package.sh linux-fedora ${{ matrix.arch }} && ./package.sh linux-arch ${{ matrix.arch }}'
+          docker run --rm -v "$PWD/dist:/source/dist" dcp-j315w-release /bin/bash -c './package.sh linux-debian ${{ matrix.arch }} && ./package.sh linux-fedora ${{ matrix.arch }} && ./package.sh linux-arch ${{ matrix.arch }} && ./package.sh linux-opensuse ${{ matrix.arch }}'
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: linux-${{ matrix.arch }}
           path: dist/*.tar.gz
           if-no-files-found: error
+
+  alpine:
+    name: Alpine musl ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+          - arch: x86_64
+            runner: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build native musl renderer and check raster geometry
+        run: docker build -f Dockerfile.alpine-release -t dcp-j315w-alpine-release .
+      - name: Alpine PDF pipeline and installation
+        run: docker run --rm dcp-j315w-alpine-release
+      - name: Package musl download
+        run: |
+          mkdir -p dist
+          docker run --rm -v "$PWD/dist:/source/dist" dcp-j315w-alpine-release ./package.sh linux-alpine '${{ matrix.arch }}'
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: alpine-${{ matrix.arch }}
+          path: dist/*.tar.gz
+          if-no-files-found: error
+
+  nix:
+    name: Nix ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+          - arch: x86_64
+            runner: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c # v35
+      - name: Build and check native Nix recipe
+        run: nix-build nix/ci.nix --no-out-link

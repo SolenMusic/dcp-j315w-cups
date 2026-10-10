@@ -111,6 +111,8 @@ if [ "$platform" = Darwin ]; then
 else
   description=$(file -b "$source_dir/rastertodcpj315w")
   case "$description" in 'ELF 64-bit '*) ;; *) fail "Build a Linux executable with ./build.sh first." ;; esac
+  interpreter=$(printf '%s\n' "$description" | sed -n 's/.*interpreter \([^, ]*\).*/\1/p')
+  [ -z "$interpreter" ] || [ -e "$interpreter" ] || fail "Missing ELF loader $interpreter; download the correct glibc or Alpine/musl bundle."
   case "$(uname -m)" in
     x86_64) case "$description" in *x86-64*) ;; *) fail "This Linux filter is not x86_64." ;; esac ;;
     aarch64|arm64) case "$description" in *aarch64*) ;; *) fail "This Linux filter is not ARM64." ;; esac ;;
