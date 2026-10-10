@@ -31,10 +31,10 @@ sudo ./install.sh --address 192.0.2.10
 ```
 
 This installs under `/Library/Printers/DCPJ315WCUPS` and creates `DCP_J315W`.
-The display name is DCP-J315W CUPS Driver. The binaries are ad hoc signed and
-not notarized. If macOS blocks a downloaded file, use the relevant Privacy &
-Security approval after reviewing the release. Do not disable Gatekeeper globally.
-Building locally is also supported.
+The display name is DCP-J315W CUPS Driver. Public binaries use Developer ID
+Application signatures; the universal `.pkg` also has a Developer ID Installer
+signature and a stapled notarization ticket. Local source builds use ad hoc
+signatures. Building locally is also supported.
 
 For a cloud-managed source checkout that cannot be read by an administrator,
 `stage=$(./stage_install.sh)` creates ordinary files in `/private/tmp`;

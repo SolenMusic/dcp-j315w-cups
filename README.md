@@ -14,6 +14,11 @@ I hope it keeps your printer running for a while longer, too.
 
 ## Download v0.1.0
 
+**macOS:** use the [universal Installer package](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.0/dcp-j315w-cups-0.1.0-macos-universal.pkg)
+for Intel and Apple Silicon. It installs the driver and attempts automatic Bonjour
+setup. The package and filter use Developer ID signatures; the released package
+is notarized and stapled. The tarballs below are an alternative for Terminal users.
+
 Each download contains the native filter, printer description, Bash installer,
 uninstaller, documentation and checksums. No compilation or Python is needed to
 install a binary download.
@@ -32,10 +37,9 @@ The ARM Arch download is for **Arch Linux ARM**, a separate distribution.
 Minimum OS versions and every distribution release have not been tested on
 physical hardware. See [verification and limitations](docs/TESTING.md).
 
-macOS binaries have an ad hoc code signature, **not an Apple Developer ID
-signature or notarization**. Installation currently uses Terminal and `sudo`.
-A graphical macOS `.pkg` installer can also be built; see
-[macOS Installer signing and notarization](docs/MACOS-RELEASE.md).
+The macOS tarballs contain Developer ID-signed CPU slices from the universal
+installer's payload. The `.pkg` is the recommended macOS download and carries
+the stapled notarization ticket. See [macOS Installer signing and notarization](docs/MACOS-RELEASE.md).
 
 ## Install
 
@@ -122,7 +126,8 @@ xcode-select --install
 ./build.sh
 ```
 
-The build uses Apple's `cups-config` and applies/verifies an ad hoc signature.
+Local builds use Apple's `cups-config` and apply/verify an ad hoc signature;
+public macOS releases are signed separately with Developer ID.
 To select an architecture explicitly:
 
 ```sh
