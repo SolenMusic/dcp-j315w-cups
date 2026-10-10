@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.1
+
+- Use the macOS system font with readable paragraph spacing on the Installer's
+  welcome, licence and conclusion pages.
+- Declare UTF-8 on every Installer page and encode navigation arrows as HTML
+  entities to prevent garbled characters.
+- Present the MIT licence as styled HTML generated from the unchanged licence text.
+- Record successful installation of the public v0.1.0 PKG and printing from Firefox.
+
+The printer renderer and printing behaviour are unchanged.
+
 ## 0.1.0
 
 Initial public release of DCP-J315W CUPS Driver.

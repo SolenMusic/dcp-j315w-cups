@@ -69,3 +69,10 @@ Physical Intel Mac, ARM Linux, Steam Deck, A6, Letter, copy collation, long jobs
 network interruption, paper-out and active cancellation checks remain outstanding.
 ICC accuracy and photo media have not been calibrated. Physical feedback is
 model-specific and must not be generalized to other Brother printers.
+
+## Public release check
+
+On 2026-10-10, the user installed the public GitHub v0.1.0 macOS PKG and
+successfully printed the release notes from Firefox. This confirms the public
+installer and an ordinary application print on the user's ARM Mac. Installer
+font/encoding defects reported during that check are corrected in v0.1.1.

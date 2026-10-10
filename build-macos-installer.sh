@@ -50,19 +50,28 @@ fi
 codesign --verify --strict "$payload/rastertodcpj315w"
 pkgbuild --root "$work/root" --scripts "$root/macos/scripts" --ownership recommended \
   --identifier org.dcp-j315w-cups.driver --version "$version" --install-location / "$work/driver.pkg"
-cp -X LICENSE "$work/resources/LICENSE.txt"
-cat > "$work/resources/Welcome.html" <<'HTML'
-<html><body><h1>DCP-J315W CUPS Driver</h1><p>Native printing for the Brother DCP-J315W on macOS Intel and Apple Silicon.</p><p>Supports A4, A5, A6 and US Letter on plain paper, in monochrome or colour at 300/600 dpi.</p><p>This installer adds the driver and attempts to discover your printer on the local network. Existing queues using this project's driver are upgraded with their settings preserved. The system default printer is unchanged.</p><p>Only the DCP-J315W is supported. USB, scanning and AirPrint are not included.</p><p>Created with LLM-assisted coding. I hope this keeps your printer running for a while longer.</p></body></html>
-HTML
-cat > "$work/resources/Conclusion.html" <<'HTML'
-<html><body><h1>Driver installed</h1><p>If the printer was discovered, choose <b>DCP-J315W CUPS Driver</b> when printing.</p><p>Otherwise, open <b>System Settings → Printers &amp; Scanners → Add Printer</b> and select <b>DCP-J315W CUPS Driver</b> in the Use menu. For manual setup, run this in Terminal with your printer's network address:</p><pre>sudo /Library/Printers/DCPJ315WCUPS/configure.sh --address PRINTER_ADDRESS</pre><p>Default settings: A4, monochrome, 300 dpi. For artwork choose Colour and Fine (600 dpi). Load paper matching the selected size.</p></body></html>
-HTML
+# Every page shares an explicit charset and the same native font styling.
+for page in Welcome Conclusion; do
+  cat macos/resources/Page-start.html "macos/resources/$page.html" macos/resources/Page-end.html > "$work/resources/$page.html"
+done
+{
+  cat macos/resources/Page-start.html
+  printf '%s\n' '<h1>MIT License</h1>'
+  # Preserve the licence's text while presenting paragraphs in the system font.
+  sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' LICENSE | awk '
+    NR <= 2 { next }
+    NF { paragraph = paragraph (paragraph ? " " : "") $0; next }
+    { if (paragraph) print "<p>" paragraph "</p>"; paragraph = "" }
+    END { if (paragraph) print "<p>" paragraph "</p>" }
+  '
+  cat macos/resources/Page-end.html
+} > "$work/resources/License.html"
 cat > "$work/distribution.xml" <<EOF
 <?xml version="1.0" encoding="utf-8"?>
 <installer-gui-script minSpecVersion="2">
   <title>DCP-J315W CUPS Driver $version</title>
   <welcome file="Welcome.html" mime-type="text/html"/>
-  <license file="LICENSE.txt" mime-type="text/plain"/>
+  <license file="License.html" mime-type="text/html"/>
   <conclusion file="Conclusion.html" mime-type="text/html"/>
   <options customize="never" require-scripts="false" hostArchitectures="$host_arch"/>
   <domains enable_localSystem="true" enable_currentUserHome="false" enable_anywhere="false"/>

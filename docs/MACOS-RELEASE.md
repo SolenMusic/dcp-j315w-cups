@@ -58,7 +58,7 @@ Use your Developer Team ID and an app-specific Apple ID password, or an App Stor
 Connect API key according to Apple's instructions. Then:
 
 ```sh
-./notarize-macos-installer.sh dist/dcp-j315w-cups-0.1.0-macos-universal.pkg dcp-j315w-cups
+./notarize-macos-installer.sh dist/dcp-j315w-cups-0.1.1-macos-universal.pkg dcp-j315w-cups
 ```
 
 The helper waits for up to 60 seconds and prints the submission ID before waiting.
@@ -67,9 +67,9 @@ resubmit. After acceptance, staple and validate the ticket, then run Gatekeeper'
 installer assessment. Only publish after these checks pass:
 
 ```sh
-xcrun stapler staple dist/dcp-j315w-cups-0.1.0-macos-universal.pkg
-xcrun stapler validate dist/dcp-j315w-cups-0.1.0-macos-universal.pkg
-spctl --assess --verbose --type install dist/dcp-j315w-cups-0.1.0-macos-universal.pkg
+xcrun stapler staple dist/dcp-j315w-cups-0.1.1-macos-universal.pkg
+xcrun stapler validate dist/dcp-j315w-cups-0.1.1-macos-universal.pkg
+spctl --assess --verbose --type install dist/dcp-j315w-cups-0.1.1-macos-universal.pkg
 ```
 
 The public signing identity is determined by the Apple Developer account. No
