@@ -79,7 +79,9 @@ if [ "$shared" -eq 0 ]; then
   if [ "$platform" = Darwin ]; then
     public_ppd=/Library/Printers/PPDs/Contents/Resources/DCP-J315W-CUPS.ppd
     if [ -r "$public_ppd" ] && uses_native "$public_ppd"; then rm -f "$public_ppd"; fi
-    for name in INSTALL.md PROVENANCE.md; do rm -f "$install_dir/docs/$name"; done
+    for name in INSTALL.md PROVENANCE.md PROTOCOL.md TESTING.md MACOS-RELEASE.md RELEASING.md NIXOS.md; do
+      rm -f "$install_dir/docs/$name"
+    done
     if [ -d "$install_dir/docs" ]; then rmdir "$install_dir/docs" 2>/dev/null || true; fi
     if pkgutil --pkg-info org.dcp-j315w-cups.driver >/dev/null 2>&1; then
       pkgutil --forget org.dcp-j315w-cups.driver >/dev/null

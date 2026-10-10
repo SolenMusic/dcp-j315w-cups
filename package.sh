@@ -35,7 +35,7 @@ for item in rastertodcpj315w install.sh install-deps.sh uninstall.sh discover.sh
 done
 cp prologue_*.bin "$stage/$name/"
 mkdir "$stage/$name/docs"
-cp docs/INSTALL.md docs/PROVENANCE.md "$stage/$name/docs/"
+cp docs/*.md "$stage/$name/docs/"
 if [[ $platform == linux-* ]]; then
   printf '%s\n' "${platform#linux-}" > "$stage/$name/BUNDLE_FLAVOUR"
 fi

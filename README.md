@@ -1,7 +1,7 @@
 # DCP-J315W CUPS Driver
 
 An independent, open-source printing driver for the **Brother DCP-J315W**,
-for native macOS and Linux printing over Wi-Fi or Ethernet.
+for native macOS and Linux printing over the local network, including Wi-Fi.
 
 **This release supports only the DCP-J315W.** Other printer models have not been
 tested and should not be assumed compatible. The project is not affiliated with

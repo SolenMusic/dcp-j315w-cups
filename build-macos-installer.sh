@@ -33,7 +33,7 @@ done
 cp -X macos/configure.sh "$payload/configure.sh"
 cp -X DCP-J315W-CUPS.ppd.in prologue_*.bin "$payload/"
 mkdir "$payload/docs"
-cp -X docs/INSTALL.md docs/PROVENANCE.md "$payload/docs/"
+cp -X docs/*.md "$payload/docs/"
 sed 's|@FILTER@|/Library/Printers/DCPJ315WCUPS/rastertodcpj315w|' DCP-J315W-CUPS.ppd.in > "$work/root/Library/Printers/PPDs/Contents/Resources/DCP-J315W-CUPS.ppd"
 chmod 755 "$payload/rastertodcpj315w" "$payload/"*.sh
 find "$work/root" -type d -exec chmod 755 {} +
