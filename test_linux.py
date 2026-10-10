@@ -15,6 +15,7 @@ from inspect_protocol import inspect
 root = Path(__file__).resolve().parent
 assert platform.system() == "Linux"
 binary = root / "rastertodcpj315w"
+fixture = Path(os.environ.get("DCPJ315W_PDF", root / "fixtures/print-options.pdf"))
 print("Linux target:", platform.machine(), flush=True)
 print(subprocess.check_output(["file", str(binary)], text=True).strip(), flush=True)
 for script in ("test_reliability.py", "test_discovery.py", "test_status.py"):
@@ -29,7 +30,7 @@ with tempfile.TemporaryDirectory(prefix="dcpj315w-linux-") as temp:
             args = ["cupsfilter", "-e", "-p", str(ppd), "-i", "application/pdf",
                     "-m", "printer/foo", "-o", f"PageSize={size}", "-o", f"Resolution={dpi}dpi",
                     "-o", f"ColorModel={color}", "-o", "page-ranges=1", "-o", "fit-to-page=true",
-                    str(root / "fixtures/print-options.pdf")]
+                    str(fixture)]
             with (folder / f"{size}-{dpi}.log").open("wb") as log:
                 result = subprocess.run(args, stdout=subprocess.PIPE, stderr=log, timeout=180)
             if result.returncode:
@@ -44,7 +45,7 @@ with tempfile.TemporaryDirectory(prefix="dcpj315w-linux-") as temp:
             print(f"PASS: Linux PDF pipeline {size}/{dpi}/{color}: valid complete page", flush=True)
     args = ["cupsfilter", "-e", "-p", str(ppd), "-i", "application/pdf", "-m", "printer/foo",
             "-n", "2", "-o", "PageSize=A4", "-o", "Resolution=300dpi", "-o", "ColorModel=Mono",
-            "-o", "page-ranges=1-2", "-o", "Collate=True", str(root / "fixtures/print-options.pdf")]
+            "-o", "page-ranges=1-2", "-o", "Collate=True", str(fixture)]
     with (folder / "copies.log").open("wb") as log:
         result = subprocess.run(args, stdout=subprocess.PIPE, stderr=log, timeout=180)
     if result.returncode:

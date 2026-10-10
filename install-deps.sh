@@ -25,7 +25,7 @@ fi
 case "$flavour" in
   debian) packages=(cups cups-client cups-filters ghostscript file avahi-daemon); manager=apt-get ;;
   fedora) packages=(cups cups-client cups-filters ghostscript file avahi); manager=dnf ;;
-  arch) packages=(cups cups-filters ghostscript file avahi); manager=pacman ;;
+  arch) packages=(cups cups-filters ghostscript file avahi qpdf); manager=pacman ;;
   *) echo 'Unknown bundle flavour.' >&2; exit 1 ;;
 esac
 command -v "$manager" >/dev/null || { echo "This bundle needs $manager; download the bundle for your distribution." >&2; exit 1; }

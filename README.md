@@ -34,6 +34,8 @@ physical hardware. See [verification and limitations](docs/TESTING.md).
 
 macOS binaries have an ad hoc code signature, **not an Apple Developer ID
 signature or notarization**. Installation currently uses Terminal and `sudo`.
+A graphical macOS `.pkg` installer can also be built; see
+[macOS Installer signing and notarization](docs/MACOS-RELEASE.md).
 
 ## Install
 
@@ -100,6 +102,9 @@ feedback is welcome.
 - Colour has been visually checked, not instrumentally calibrated. 600 dpi is
   preferred for artwork; 300 dpi colour is basic.
 - A6 and Letter are checked offline but have not been physically tested.
+- Arch's libcupsfilters 2.2.x PDF-processing regression can produce blank pages
+  before rendering reaches this driver. A [QPDF workaround](docs/INSTALL.md#arch-pdf-processing-regression)
+  is verified; unrestricted PDF printing on that affected stack is not supported.
 - Physical tests of interruption, paper-out, long jobs and every target machine
   remain outstanding. Future macOS releases and CUPS 3 are not guaranteed compatible.
 

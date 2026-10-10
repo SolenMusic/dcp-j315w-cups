@@ -23,7 +23,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Build native filter
         env:
           CFLAGS: -arch ${{ matrix.arch }} -mmacosx-version-min=11.0
@@ -40,7 +40,9 @@ jobs:
         run: |
           ./package.sh macos '${{ matrix.arch }}'
           ./build-macos-installer.sh --unsigned
-      - uses: actions/upload-artifact@v4
+      - name: Verify Installer installation and upgrade
+        run: sudo env GITHUB_ACTIONS=true "$(command -v python3)" test_macos_installer.py dist/*-unsigned.pkg
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: macos-${{ matrix.arch }}
           path: |
@@ -61,7 +63,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Build and verify portable Linux filter
         run: |
           docker build -f Dockerfile.release -t dcp-j315w-release .
@@ -81,12 +83,14 @@ jobs:
         if: matrix.arch == 'x86_64'
         run: |
           docker build --build-arg RUNTIME_IMAGE=archlinux:latest -f Dockerfile.runtime-test -t dcp-j315w-arch-check .
-          docker run --rm dcp-j315w-arch-check
+          # libcupsfilters 2.2.x/PDFio can silently discard compound-filter
+          # content streams. Exercise the documented qpdf workaround explicitly.
+          docker run --rm dcp-j315w-arch-check /bin/bash -c 'qpdf --stream-data=uncompress fixtures/print-options.pdf /tmp/normalized.pdf && DCPJ315W_PDF=/tmp/normalized.pdf python3 test_linux.py && python3 test_installation_linux.py'
       - name: Package distribution flavours
         run: |
           mkdir -p dist
           docker run --rm -v "$PWD/dist:/source/dist" dcp-j315w-release /bin/bash -c './package.sh linux-debian ${{ matrix.arch }} && ./package.sh linux-fedora ${{ matrix.arch }} && ./package.sh linux-arch ${{ matrix.arch }}'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: linux-${{ matrix.arch }}
           path: dist/*.tar.gz

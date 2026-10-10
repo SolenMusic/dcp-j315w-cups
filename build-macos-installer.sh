@@ -1,6 +1,7 @@
 #!/bin/bash
 # Developer ID credentials stay in the local keychain, never in the repository.
 set -euo pipefail
+export COPYFILE_DISABLE=1
 root=$(cd -- "$(dirname -- "$0")" && pwd)
 cd "$root"
 unsigned=0
@@ -25,14 +26,14 @@ work=$(mktemp -d "${TMPDIR:-/tmp}/dcp-j315w-installer.XXXXXX")
 trap 'rm -rf "$work"' EXIT
 payload="$work/root/Library/Printers/DCPJ315WCUPS"
 mkdir -p "$payload" "$work/root/Library/Printers/PPDs/Contents/Resources" "$work/resources" dist
-cp "$binary" "$payload/rastertodcpj315w"
+cp -X "$binary" "$payload/rastertodcpj315w"
 for item in install.sh install-deps.sh uninstall.sh discover.sh status.sh status_parse.awk prepare_ppd.awk stage_install.sh VERSION LICENSE README.md CHANGELOG.md; do
-  cp "$item" "$payload/$item"
+  cp -X "$item" "$payload/$item"
 done
-cp macos/configure.sh "$payload/configure.sh"
-cp DCP-J315W-CUPS.ppd.in prologue_*.bin "$payload/"
+cp -X macos/configure.sh "$payload/configure.sh"
+cp -X DCP-J315W-CUPS.ppd.in prologue_*.bin "$payload/"
 mkdir "$payload/docs"
-cp docs/INSTALL.md docs/PROVENANCE.md "$payload/docs/"
+cp -X docs/INSTALL.md docs/PROVENANCE.md "$payload/docs/"
 sed 's|@FILTER@|/Library/Printers/DCPJ315WCUPS/rastertodcpj315w|' DCP-J315W-CUPS.ppd.in > "$work/root/Library/Printers/PPDs/Contents/Resources/DCP-J315W-CUPS.ppd"
 chmod 755 "$payload/rastertodcpj315w" "$payload/"*.sh
 find "$work/root" -type d -exec chmod 755 {} +
@@ -49,7 +50,7 @@ fi
 codesign --verify --strict "$payload/rastertodcpj315w"
 pkgbuild --root "$work/root" --scripts "$root/macos/scripts" --ownership recommended \
   --identifier org.dcp-j315w-cups.driver --version "$version" --install-location / "$work/driver.pkg"
-cp LICENSE "$work/resources/LICENSE.txt"
+cp -X LICENSE "$work/resources/LICENSE.txt"
 cat > "$work/resources/Welcome.html" <<'HTML'
 <html><body><h1>DCP-J315W CUPS Driver</h1><p>Native printing for the Brother DCP-J315W on macOS Intel and Apple Silicon.</p><p>Supports A4, A5, A6 and US Letter on plain paper, in monochrome or colour at 300/600 dpi.</p><p>This installer adds the driver and attempts to discover your printer on the local network. Existing queues using this project's driver are upgraded with their settings preserved. The system default printer is unchanged.</p><p>Only the DCP-J315W is supported. USB, scanning and AirPrint are not included.</p><p>Created with LLM-assisted coding. I hope this keeps your printer running for a while longer.</p></body></html>
 HTML

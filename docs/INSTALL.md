@@ -17,6 +17,12 @@ shasum -a 256 -c SHA256SUMS
 
 ## macOS
 
+The graphical `.pkg` installer installs the driver and attempts Bonjour setup.
+If no unique printer is found, add it using System Settings and choose
+**DCP-J315W CUPS Driver** in the Use menu. Manual configuration is available with
+`sudo /Library/Printers/DCPJ315WCUPS/configure.sh --address PRINTER_ADDRESS`.
+The instructions below describe the alternative tarball installer.
+
 Choose the ARM64 download for Apple Silicon, or x86_64 for Intel. Extract it, then:
 
 ```sh
@@ -59,6 +65,29 @@ using `restorecon`, when available. Do not disable SELinux to troubleshoot.
 SteamOS/Steam Deck and other immutable systems may need an installation method
 that survives OS updates. The Arch tarball does not bypass their read-only system
 policy. A physical Steam Deck test has not yet been performed.
+
+### Arch PDF-processing regression
+
+The Arch stack checked during this release uses libcupsfilters 2.2.x, whose PDFio
+rewrite rejects compound PDF stream filters and can silently produce blank pages.
+This happens before the driver receives raster data. OpenPrinting documents the
+broader regression and a QPDF-based 2.1.2 release:
+[upstream notice](https://openprinting.github.io/libcupsfilters-2.1.2).
+
+Until your distribution supplies a corrected PDF-processing stack, normalize an
+affected PDF with QPDF before printing it. The Arch dependency helper includes
+`qpdf`:
+
+```sh
+qpdf --stream-data=uncompress document.pdf normalized.pdf
+lp -d DCP_J315W -o media=A4 -o fit-to-page=true normalized.pdf
+```
+
+The release's Arch pipeline checks exercise this workaround explicitly. The
+driver does not replace your system's PDF filters or silently change documents
+submitted from applications. Update the system printing stack when a fix becomes
+available; this initial release cannot guarantee arbitrary PDFs on affected Arch
+versions.
 
 ## Discovery and options
 
