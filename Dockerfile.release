@@ -1,0 +1,10 @@
+# One conservative ABI baseline for all Linux distribution bundles.
+FROM almalinux:9
+RUN dnf install -y gcc cups-devel python3 file binutils bash tar gzip && dnf clean all
+WORKDIR /source
+COPY . .
+RUN ./build.sh && python3 test_reliability.py && python3 test_discovery.py && \
+    python3 test_status.py && \
+    cc -std=c11 -Wall -Wextra -Werror make_geometry_probe.c $(cups-config --cflags --ldflags --libs) -o /tmp/make_geometry_probe && \
+    python3 test_geometry.py /tmp/make_geometry_probe && \
+    file rastertodcpj315w && ldd rastertodcpj315w

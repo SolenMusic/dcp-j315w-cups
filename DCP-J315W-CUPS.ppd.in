@@ -1,0 +1,65 @@
+*PPD-Adobe: "4.3"
+*FormatVersion: "4.3"
+*FileVersion: "0.1.0"
+*LanguageVersion: English
+*LanguageEncoding: ISOLatin1
+*PCFileName: "DCPJ315N.PPD"
+*Manufacturer: "Brother"
+*Product: "(DCP-J315W)"
+*ModelName: "DCP-J315W CUPS Driver"
+*ShortNickName: "DCP-J315W CUPS Driver"
+*NickName: "DCP-J315W CUPS Driver"
+*cupsVersion: 1.4
+*cupsManualCopies: True
+*cupsFilter: "application/vnd.cups-raster 0 @FILTER@"
+*ColorDevice: True
+*DefaultColorSpace: RGB
+*FileSystem: False
+*LanguageLevel: "3"
+*PSVersion: "(3010.106) 3"
+*FreeVM: "1700000"
+*Throughput: "1"
+*VariablePaperSize: False
+
+*OpenUI *PageSize/Paper Size: PickOne
+*OrderDependency: 10 AnySetup *PageSize
+*DefaultPageSize: A4
+*PageSize A4/A4: "<</PageSize[595 842]/ImagingBBox null>>setpagedevice"
+*PageSize A5/A5: "<</PageSize[420 595]/ImagingBBox null>>setpagedevice"
+*PageSize A6/A6: "<</PageSize[297 420]/ImagingBBox null>>setpagedevice"
+*PageSize Letter/US Letter: "<</PageSize[612 792]/ImagingBBox null>>setpagedevice"
+*CloseUI: *PageSize
+
+*OpenUI *PageRegion: PickOne
+*OrderDependency: 11 AnySetup *PageRegion
+*DefaultPageRegion: A4
+*PageRegion A4/A4: "<</PageSize[595 842]/ImagingBBox null>>setpagedevice"
+*PageRegion A5/A5: "<</PageSize[420 595]/ImagingBBox null>>setpagedevice"
+*PageRegion A6/A6: "<</PageSize[297 420]/ImagingBBox null>>setpagedevice"
+*PageRegion Letter/US Letter: "<</PageSize[612 792]/ImagingBBox null>>setpagedevice"
+*CloseUI: *PageRegion
+
+*DefaultImageableArea: A4
+*ImageableArea A4/A4: "9 9 586 833"
+*ImageableArea A5/A5: "9 9 411 586"
+*ImageableArea A6/A6: "9 9 288 411"
+*ImageableArea Letter/US Letter: "9 9 603 783"
+*DefaultPaperDimension: A4
+*PaperDimension A4/A4: "595 842"
+*PaperDimension A5/A5: "420 595"
+*PaperDimension A6/A6: "297 420"
+*PaperDimension Letter/US Letter: "612 792"
+
+*OpenUI *Resolution/Quality: PickOne
+*OrderDependency: 20 AnySetup *Resolution
+*DefaultResolution: 300dpi
+*Resolution 300dpi/Normal (300 dpi): "<</HWResolution [300 300]/cupsColorOrder 0/cupsColorSpace 1/cupsBitsPerColor 8>>setpagedevice"
+*Resolution 600dpi/Fine (600 dpi): "<</HWResolution [600 600]/cupsColorOrder 0/cupsColorSpace 1/cupsBitsPerColor 8>>setpagedevice"
+*CloseUI: *Resolution
+
+*OpenUI *ColorModel/Output: PickOne
+*OrderDependency: 30 AnySetup *ColorModel
+*DefaultColorModel: Mono
+*ColorModel Mono/Monochrome: "<</cupsInteger15 0>>setpagedevice"
+*ColorModel Color/Colour: "<</cupsInteger15 1>>setpagedevice"
+*CloseUI: *ColorModel

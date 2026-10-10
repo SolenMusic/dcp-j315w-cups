@@ -1,0 +1,8 @@
+FROM --platform=linux/amd64 amd64/debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc libcups2-dev libcupsimage2-dev python3 file && rm -rf /var/lib/apt/lists/*
+WORKDIR /source
+COPY . .
+RUN ./build.sh && file rastertodcpj315w && \
+    cc -std=c11 -Wall -Wextra -Werror make_geometry_probe.c -lcups -o /tmp/make_geometry_probe && \
+    python3 test_reliability.py && python3 test_geometry.py /tmp/make_geometry_probe

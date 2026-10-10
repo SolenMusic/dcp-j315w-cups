@@ -1,0 +1,89 @@
+name: Build and verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  macos:
+    name: macOS ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runner: macos-15
+          - arch: x86_64
+            runner: macos-15-intel
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build native filter
+        env:
+          CFLAGS: -arch ${{ matrix.arch }} -mmacosx-version-min=11.0
+        run: ./build.sh
+      - name: Verify renderer and PDF pipeline
+        run: |
+          python3 test_reliability.py
+          python3 test_discovery.py
+          python3 test_status.py
+          cc -std=c11 -Wall -Wextra -Werror make_geometry_probe.c $(cups-config --cflags --ldflags --libs) -o /tmp/make_geometry_probe
+          python3 test_geometry.py /tmp/make_geometry_probe
+          python3 test_macos.py
+      - name: Package
+        run: ./package.sh macos '${{ matrix.arch }}'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-${{ matrix.arch }}
+          path: dist/*.tar.gz
+          if-no-files-found: error
+
+  linux:
+    name: Linux ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+          - arch: x86_64
+            runner: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and verify portable Linux filter
+        run: |
+          docker build -f Dockerfile.release -t dcp-j315w-release .
+          container=$(docker create dcp-j315w-release)
+          mkdir -p release-filter
+          docker cp "$container:/source/rastertodcpj315w" release-filter/rastertodcpj315w
+          docker rm "$container"
+      - name: Debian runtime and installation
+        run: |
+          docker build --build-arg RUNTIME_IMAGE=debian:bookworm-slim -f Dockerfile.runtime-test -t dcp-j315w-debian-check .
+          docker run --rm dcp-j315w-debian-check
+      - name: Fedora runtime and installation
+        run: |
+          docker build --build-arg RUNTIME_IMAGE=fedora:43 -f Dockerfile.runtime-test -t dcp-j315w-fedora-check .
+          docker run --rm dcp-j315w-fedora-check
+      - name: Arch runtime and installation
+        if: matrix.arch == 'x86_64'
+        run: |
+          docker build --build-arg RUNTIME_IMAGE=archlinux:latest -f Dockerfile.runtime-test -t dcp-j315w-arch-check .
+          docker run --rm dcp-j315w-arch-check
+      - name: Package distribution flavours
+        run: |
+          mkdir -p dist
+          docker run --rm -v "$PWD/dist:/source/dist" dcp-j315w-release /bin/bash -c './package.sh linux-debian ${{ matrix.arch }} && ./package.sh linux-fedora ${{ matrix.arch }} && ./package.sh linux-arch ${{ matrix.arch }}'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-${{ matrix.arch }}
+          path: dist/*.tar.gz
+          if-no-files-found: error

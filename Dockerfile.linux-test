@@ -1,0 +1,11 @@
+ARG DEBIAN_IMAGE=debian:bookworm-slim
+FROM ${DEBIAN_IMAGE}
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential libcups2-dev libcupsimage2-dev cups-daemon cups-client \
+    cups-filters ghostscript python3 file && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends cups && \
+    rm -rf /var/lib/apt/lists/*
+WORKDIR /source
+COPY . .
+RUN ./build.sh && file rastertodcpj315w && cups-config --version
+CMD ["python3", "test_linux.py"]

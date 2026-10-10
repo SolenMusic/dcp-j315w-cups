@@ -1,0 +1,12 @@
+DCP-J315W NATIVE DAILY-USE TEST
+
+PAGE 1 OF 2
+
+This page should print first.
+The second page should follow without an extra blank sheet.
+DCP-J315W NATIVE DAILY-USE TEST
+
+PAGE 2 OF 2
+
+This page should print second.
+Please check that both pages are complete and in order.
