@@ -23,7 +23,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build native filter
         env:
           CFLAGS: -arch ${{ matrix.arch }} -mmacosx-version-min=11.0
@@ -57,7 +57,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build and verify portable Linux filter
         run: |
           docker build -f Dockerfile.release -t dcp-j315w-release .
