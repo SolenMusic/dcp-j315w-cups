@@ -43,8 +43,11 @@ then run `sudo "$stage/install.sh" --address 192.0.2.10`.
 ## Linux
 
 Select the tarball matching your CPU and package-manager family. ARM64 is also
-called aarch64. All Linux tarballs share a portable AlmaLinux 9 build, with
-distribution-specific dependency handling. They are not `.deb` or `.rpm` packages.
+called aarch64. The Debian/Fedora/Arch/openSUSE tarballs share a portable AlmaLinux
+9 glibc build. Alpine tarballs are separately compiled against musl on Alpine 3.24.
+Do not use a glibc binary on Alpine. Downloads include distribution-specific
+dependency handling and are not `.deb`, `.rpm` or `.apk` packages.
+NixOS uses the [native recipe](NIXOS.md), not this installer.
 
 ```sh
 ./install-deps.sh --dry-run
@@ -57,6 +60,14 @@ It starts CUPS and Avahi when systemd is running. It does not install Python.
 If these packages are already present, omit it. Net-SNMP is optional for
 `status.sh`: install `snmp` on Debian or `net-snmp-utils` on Fedora; on Arch use
 `net-snmp`.
+
+openSUSE uses `zypper`; the prebuilt glibc binaries require glibc 2.34+, so older
+Leap releases need a source build. CI checks Tumbleweed. Alpine uses `apk` and
+OpenRC when available; run `apk add bash` first if Bash is missing. The installer
+checks the ELF loader before changing files to catch a glibc/musl mismatch.
+Alpine's CUPS package permits printer administration by the `lpadmin` group.
+The dependency helper adds `root` to that group for this root-run queue installer.
+If skipping the helper, ensure that setup has been done with `adduser root lpadmin`.
 
 The filter is installed in the active CUPS server's `filter/dcp-j315w-cups`
 directory. On SELinux systems the installer applies the normal file contexts

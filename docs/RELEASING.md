@@ -2,7 +2,8 @@
 
 1. Update `VERSION`, PPD `FileVersion`, changelog and download links together.
 2. Run the Build and verify workflow for the release source commit. All four CPU
-   jobs must pass, including the actual macOS Installer lifecycle checks. The Arch
+   architecture/package jobs must pass, including macOS Installer lifecycle,
+   Alpine musl PDF/installer checks and native Nix store-path checks. The Arch
    PDF test deliberately uses the documented QPDF workaround for its upstream
    regression; retain that limitation in the release notes while it applies.
 3. Download that run's Linux tarballs and macOS artifacts. CI's macOS PKGs are
@@ -18,10 +19,12 @@
    internal manifest, and confirm there are no local logs, private credentials or
    personal print documents in the assets.
 8. Tag the source commit as `vVERSION`. Publish the release with the universal
-   signed PKG, two Mac tarballs, six Linux flavour/CPU tarballs and checksums.
+   signed PKG, two Mac tarballs, ten Linux flavour/CPU tarballs and checksums.
 9. Check the public asset names, sizes and checksums against the local files, and
    verify the tag refers to the intended source commit.
 
-For `0.1.0`, the runtime Linux flavours share one AlmaLinux 9 build per CPU, checked
-on Debian and Fedora, with the x86_64 Arch check and explicit QPDF workaround.
+For `0.1.0`, the glibc Linux flavours share one AlmaLinux 9 build per CPU, checked
+on Debian, Fedora and openSUSE, with the x86_64 Arch check and explicit QPDF
+workaround. Alpine has separate native musl builds for both CPUs. Nix builds from
+source using its own CUPS library, with the included recipe/configuration example.
 Do not describe untested hardware or extra distributions as physically verified.

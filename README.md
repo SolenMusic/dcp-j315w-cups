@@ -29,10 +29,18 @@ install a binary download.
 | Debian / Ubuntu | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.0/dcp-j315w-cups-0.1.0-linux-debian-x86_64.tar.gz) | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.0/dcp-j315w-cups-0.1.0-linux-debian-arm64.tar.gz) |
 | Red Hat / Fedora | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.0/dcp-j315w-cups-0.1.0-linux-fedora-x86_64.tar.gz) | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.0/dcp-j315w-cups-0.1.0-linux-fedora-arm64.tar.gz) |
 | Arch / Arch Linux ARM | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.0/dcp-j315w-cups-0.1.0-linux-arch-x86_64.tar.gz) | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.0/dcp-j315w-cups-0.1.0-linux-arch-arm64.tar.gz) |
+| openSUSE | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.0/dcp-j315w-cups-0.1.0-linux-opensuse-x86_64.tar.gz) | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.0/dcp-j315w-cups-0.1.0-linux-opensuse-arm64.tar.gz) |
+| Alpine (musl) | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.0/dcp-j315w-cups-0.1.0-linux-alpine-x86_64.tar.gz) | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.0/dcp-j315w-cups-0.1.0-linux-alpine-arm64.tar.gz) |
 
-macOS builds target macOS 11 and later. Linux builds require glibc 2.34 or later
-and CUPS 2.x (`libcups.so.2`). Linux bundles use an AlmaLinux 9 ABI baseline; the
-three flavours differ in their dependency installer, not in printer rendering.
+**NixOS:** use the [native recipe and declarative configuration example](docs/NIXOS.md).
+
+macOS builds target macOS 11 and later. The Debian, Fedora, Arch and openSUSE
+bundles require glibc 2.34 or later and CUPS 2.x (`libcups.so.2`). They use an
+AlmaLinux 9 ABI baseline and differ in dependency handling, not printer rendering.
+Alpine downloads are separately built against musl on Alpine 3.24; do not use a
+glibc download on Alpine. openSUSE runtime checks use Tumbleweed; older Leap
+versions with glibc below 2.34 need a source build. NixOS builds against its own
+system libraries using the included Nix recipe.
 The ARM Arch download is for **Arch Linux ARM**, a separate distribution.
 Minimum OS versions and every distribution release have not been tested on
 physical hardware. See [verification and limitations](docs/TESTING.md).
@@ -56,9 +64,13 @@ On Linux, install missing runtime dependencies first, or use:
 sudo ./install.sh --install-deps --address 192.0.2.10
 ```
 
-The Linux dependency helper uses `apt-get`, `dnf`, or `pacman`. On Arch it performs
+The Linux dependency helper uses `apt-get`, `dnf`, `pacman`, `zypper`, or `apk`.
+On Arch it performs
 a full `pacman -Syu` upgrade, as required to avoid partial upgrades. Review the
 plan using `./install-deps.sh --dry-run` before running it.
+
+Alpine's base installation may lack Bash, so install it first with `apk add bash`.
+NixOS uses the native recipe instead of these shell installers.
 
 For Bonjour discovery instead of a fixed address:
 
@@ -147,6 +159,10 @@ sudo apt-get install build-essential libcups2-dev
 sudo dnf install gcc cups-devel
 # Arch / Arch Linux ARM
 sudo pacman -Syu --needed base-devel cups
+# openSUSE
+sudo zypper install gcc cups-devel
+# Alpine (run as root; produces a native musl binary)
+apk add build-base cups-dev bash
 ```
 
 Then run `./build.sh` and use `sudo ./install.sh --address PRINTER_ADDRESS`.
@@ -164,7 +180,8 @@ To create a release tarball from a built executable:
 
 [Developer checks](docs/TESTING.md) and [printer protocol notes](docs/PROTOCOL.md)
 describe the repeatable verification. GitHub Actions builds and checks both CPUs
-and generates all eight binary downloads.
+for macOS, glibc Linux, Alpine/musl and the native Nix recipe, and generates twelve
+binary tarballs. The public universal macOS Installer is signed/notarized locally.
 
 ## Licence and provenance
 

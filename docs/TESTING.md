@@ -38,6 +38,11 @@ Do not run it on a personal CUPS server.
 GitHub Actions builds both macOS CPUs and both Linux CPUs. Linux release binaries
 are built against AlmaLinux 9, then run through Debian/Fedora PDF pipeline and
 installer checks. An additional x86_64 Arch check uses Arch's native CUPS stack.
+The same glibc build is checked on openSUSE Tumbleweed for both CPUs. Alpine 3.24
+gets separate native musl builds, the full PDF pipeline and installer lifecycle
+checks. The native Nix derivation builds/checks both CPUs and verifies that the
+installed filter can locate its command data in the Nix store. These additions
+have not been physically tested with the printer.
 The Arch PDF check uses the documented qpdf normalization workaround for an
 upstream libcupsfilters 2.2.x/PDFio regression. It does not establish that all PDFs
 work with the affected unmodified system pipeline. The ARM Arch tarball shares

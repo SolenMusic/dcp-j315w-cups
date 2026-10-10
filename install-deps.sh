@@ -44,6 +44,11 @@ case "$flavour" in
   opensuse) zypper --non-interactive install "${packages[@]}" ;;
   alpine) apk add "${packages[@]}" ;;
 esac
+if [[ $flavour == alpine && " $(id -nG root) " != *" lpadmin "* ]]; then
+  # Alpine builds CUPS with lpadmin as its sole SystemGroup. Our root-run
+  # queue installer needs root in that group for local CUPS authorization.
+  adduser root lpadmin
+fi
 if command -v systemctl >/dev/null && [[ -d /run/systemd/system ]]; then
   systemctl enable --now cups.service
   systemctl enable --now avahi-daemon.service

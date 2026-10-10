@@ -14,6 +14,8 @@ Initial public release of DCP-J315W CUPS Driver.
 - A universal graphical macOS Installer with Developer ID signing and notarization tooling.
 - Actual PKG installation, upgrade, held-job protection and removal checks on both macOS CPUs.
 - A documented and verified QPDF workaround for Arch's upstream PDF-processing regression.
+- openSUSE tarballs and separate native Alpine/musl tarballs for both Linux CPUs.
+- A native NixOS derivation and declarative printer configuration example.
 - Build instructions, automated verification, MIT licensing and documented provenance.
 - Production driver names and controls without prototype or experimental labels.
 
