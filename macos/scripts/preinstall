@@ -1,0 +1,22 @@
+#!/bin/bash
+# Reject an upgrade while one of our existing queues has unfinished jobs.
+set -euo pipefail
+if [[ ${3:-/} != / ]]; then
+  echo 'Install this driver on the running macOS startup volume.' >&2
+  exit 1
+fi
+for ppd in /etc/cups/ppd/*.ppd; do
+  [[ -f "$ppd" ]] || continue
+  if /usr/bin/awk '
+    /^\*cupsFilter:/ && (index($0, "/Library/Printers/DCPJ315WCUPS/rastertodcpj315w") ||
+                          index($0, "/Library/Printers/DCPJ315WNative/rastertobrother_native")) { found=1 }
+    END { exit !found }
+  ' "$ppd"; then
+    queue=$(basename "$ppd" .ppd)
+    pending=$(/usr/bin/lpstat -W not-completed -o "$queue" 2>/dev/null || true)
+    if [[ -n $pending ]]; then
+      echo "Queue $queue has unfinished jobs. Finish or cancel them before installing." >&2
+      exit 1
+    fi
+  fi
+done

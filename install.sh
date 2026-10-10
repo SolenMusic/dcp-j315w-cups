@@ -107,7 +107,7 @@ previous_ppd="/etc/cups/ppd/$queue.ppd"
 [ -r "$source_dir/DCP-J315W-CUPS.ppd.in" ] && [ -r "$source_dir/prepare_ppd.awk" ] && [ -r "$source_dir/uninstall.sh" ] || fail "Missing PPD template, generator or uninstaller."
 if [ "$platform" = Darwin ]; then
   codesign --verify --strict "$source_dir/rastertodcpj315w" || fail "The source filter's signature is invalid."
-  lipo -verify_arch "$(uname -m)" "$source_dir/rastertodcpj315w" || fail "Download the macOS filter for your CPU architecture."
+  lipo "$source_dir/rastertodcpj315w" -verify_arch "$(uname -m)" || fail "Download the macOS filter for your CPU architecture."
 else
   description=$(file -b "$source_dir/rastertodcpj315w")
   case "$description" in 'ELF 64-bit '*) ;; *) fail "Build a Linux executable with ./build.sh first." ;; esac

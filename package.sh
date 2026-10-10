@@ -11,7 +11,7 @@ platform=$1
 arch=$2
 case "$arch" in x86_64|arm64) ;; *) echo 'Unsupported CPU.' >&2; exit 1 ;; esac
 case "$platform" in
-  macos) [[ $(uname -s) == Darwin ]]; lipo -verify_arch "$arch" rastertodcpj315w ;;
+  macos) [[ $(uname -s) == Darwin ]]; lipo rastertodcpj315w -verify_arch "$arch" ;;
   linux-debian|linux-fedora|linux-arch)
     [[ $(uname -s) == Linux ]]
     description=$(file -b rastertodcpj315w)

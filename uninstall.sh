@@ -71,9 +71,20 @@ if [ "$dry_run" -eq 1 ]; then echo "Dry run complete; no files or queues changed
 if [ "$existing" -eq 1 ]; then lpadmin -x "$queue"; fi
 if [ "$shared" -eq 0 ]; then
   # Remove only the files installed by this project. Leave unexpected files.
-  for name in rastertodcpj315w DCP-J315W-CUPS.ppd uninstall.sh; do
+  for name in rastertodcpj315w DCP-J315W-CUPS.ppd DCP-J315W-CUPS.ppd.in uninstall.sh \
+      install.sh install-deps.sh configure.sh stage_install.sh discover.sh status.sh \
+      status_parse.awk prepare_ppd.awk VERSION LICENSE README.md CHANGELOG.md; do
     rm -f "$install_dir/$name"
   done
+  if [ "$platform" = Darwin ]; then
+    public_ppd=/Library/Printers/PPDs/Contents/Resources/DCP-J315W-CUPS.ppd
+    if [ -r "$public_ppd" ] && uses_native "$public_ppd"; then rm -f "$public_ppd"; fi
+    for name in INSTALL.md PROVENANCE.md; do rm -f "$install_dir/docs/$name"; done
+    if [ -d "$install_dir/docs" ]; then rmdir "$install_dir/docs" 2>/dev/null || true; fi
+    if pkgutil --pkg-info org.dcp-j315w-cups.driver >/dev/null 2>&1; then
+      pkgutil --forget org.dcp-j315w-cups.driver >/dev/null
+    fi
+  fi
   for mode in a4_150 a4_300 a4_600 a5_300 a5_600 a6_150 a6_300 a6_600 letter_300 letter_600; do
     rm -f "$install_dir/prologue_$mode.bin"
   done

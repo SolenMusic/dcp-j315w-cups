@@ -37,11 +37,15 @@ jobs:
           python3 test_geometry.py /tmp/make_geometry_probe
           python3 test_macos.py
       - name: Package
-        run: ./package.sh macos '${{ matrix.arch }}'
+        run: |
+          ./package.sh macos '${{ matrix.arch }}'
+          ./build-macos-installer.sh --unsigned
       - uses: actions/upload-artifact@v4
         with:
           name: macos-${{ matrix.arch }}
-          path: dist/*.tar.gz
+          path: |
+            dist/*.tar.gz
+            dist/*.pkg
           if-no-files-found: error
 
   linux:

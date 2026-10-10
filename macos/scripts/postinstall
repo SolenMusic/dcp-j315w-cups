@@ -1,0 +1,28 @@
+#!/bin/bash
+# Driver installation succeeds even when no network printer is discoverable.
+set -euo pipefail
+export PATH=/usr/bin:/bin:/usr/sbin:/sbin
+root=/Library/Printers/DCPJ315WCUPS
+stage=$("$root/stage_install.sh")
+trap 'rm -rf "$stage"' EXIT
+upgraded=0
+for ppd in /etc/cups/ppd/*.ppd; do
+  [[ -f "$ppd" ]] || continue
+  if awk '
+    /^\*cupsFilter:/ && (index($0, "/Library/Printers/DCPJ315WCUPS/rastertodcpj315w") ||
+                          index($0, "/Library/Printers/DCPJ315WNative/rastertobrother_native")) { found=1 }
+    END { exit !found }
+  ' "$ppd"; then
+    queue=$(basename "$ppd" .ppd)
+    if "$stage/install.sh" --queue "$queue"; then upgraded=1; else
+      echo "Driver files installed; queue $queue needs manual configuration." >&2
+    fi
+  fi
+done
+if [[ $upgraded == 0 ]]; then
+  if ! "$stage/install.sh" --discover; then
+    echo 'Driver files installed. Add the printer in System Settings, or run:'
+    echo 'sudo /Library/Printers/DCPJ315WCUPS/configure.sh --address PRINTER_ADDRESS'
+  fi
+fi
+exit 0

@@ -36,6 +36,8 @@ with tempfile.TemporaryDirectory(prefix="dcpj315w-linux-") as temp:
                 print((folder / f"{size}-{dpi}.log").read_text(), flush=True)
             assert result.returncode == 0, (size, dpi, result.returncode)
             pages = inspect(result.stdout)
+            if not pages[0]["ink_pixels"]:
+                print((folder / f"{size}-{dpi}.log").read_text(), flush=True)
             assert len(pages) == 1 and pages[0]["media"] == size.lower() and pages[0]["dpi"] == dpi
             assert pages[0]["ink_pixels"] > 0
             assert pages[0]["slots"] == ([4] if color == "Mono" else [0, 1, 2, 4])
