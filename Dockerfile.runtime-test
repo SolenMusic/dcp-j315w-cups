@@ -1,13 +1,13 @@
 ARG RUNTIME_IMAGE=debian:bookworm-slim
 FROM ${RUNTIME_IMAGE}
 RUN if command -v apt-get >/dev/null; then \
-      apt-get update && apt-get install -y --no-install-recommends cups cups-client cups-filters ghostscript libcups2-dev python3 file; \
+      apt-get update && apt-get install -y --no-install-recommends cups cups-client cups-filters ghostscript libcups2-dev python3 file binutils; \
     elif command -v dnf >/dev/null; then \
-      dnf install -y cups cups-client cups-filters ghostscript cups-devel python3 file; \
+      dnf install -y cups cups-client cups-filters ghostscript cups-devel python3 file binutils; \
     elif command -v pacman >/dev/null; then \
-      pacman -Syu --noconfirm --needed cups cups-filters ghostscript python file qpdf; \
+      pacman -Syu --noconfirm --needed cups cups-filters ghostscript python file binutils qpdf; \
     elif command -v zypper >/dev/null; then \
-      zypper --non-interactive install cups cups-client cups-filters ghostscript cups-devel python3 file; \
+      zypper --non-interactive install cups cups-client cups-filters ghostscript cups-devel python3 file binutils; \
     else exit 1; fi
 WORKDIR /source
 COPY . .

@@ -79,7 +79,7 @@ jobs:
         run: docker build --platform '${{ matrix.platform }}' --build-arg BASE_IMAGE='${{ matrix.base }}' -f Dockerfile.legacy-linux -t dcp-legacy .
       - name: Verify raster, PDF and real CUPS installation under emulation
         run: |
-          docker run --rm --platform '${{ matrix.platform }}' -v "$PWD:/work" -e CFLAGS='${{ matrix.flags }}' -e QEMU_CPU='${{ matrix.cpu }}' dcp-legacy bash -c './install-deps.sh && ./build.sh && python3 test_linux.py && python3 test_installation_linux.py && ./package.sh linux-${{ matrix.flavour }} ${{ matrix.arch }} && cd dist && sha256sum *.tar.gz > SHA256SUMS'
+          docker run --rm --platform '${{ matrix.platform }}' -v "$PWD:/work" -e CFLAGS='${{ matrix.flags }}' -e QEMU_CPU='${{ matrix.cpu }}' dcp-legacy bash -c 'cp -R /work /source && cd /source && ./install-deps.sh && ./build.sh && python3 test_linux.py && python3 test_installation_linux.py && ./package.sh linux-${{ matrix.flavour }} ${{ matrix.arch }} && cd dist && sha256sum *.tar.gz > SHA256SUMS && mkdir -p /work/dist && cp ./* /work/dist/'
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: legacy-${{ matrix.id }}
