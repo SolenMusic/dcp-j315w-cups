@@ -12,6 +12,33 @@ hands-on printing on a real DCP-J315W guiding development. It began with a simpl
 wish to keep a working printer usable when its original driver stops keeping up.
 I hope it keeps your printer running for a while longer, too.
 
+## Printing and scanning support
+
+Printing and scanning are separate projects for the same **Brother DCP-J315W**.
+Install the component you need, or both for the full Wi-Fi printing/scanning setup.
+Here, **wired** means a direct USB/cable connection to the printer.
+
+| Capability | [CUPS printing driver](https://github.com/SolenMusic/dcp-j315w-cups) | [Network scanner driver](https://github.com/SolenMusic/dcp-j315w-scan) |
+| --- | --- | --- |
+| Wi-Fi printing | Supported | Not provided; use the printing driver |
+| Wi-Fi scanning | Not provided; use the scanner driver | Supported |
+| USB / wired printing | Not implemented | Not provided |
+| USB / wired scanning | Not provided | Not implemented |
+| Monochrome and colour printing | 300/600 dpi; black-only monochrome | Not provided |
+| Colour, grayscale and text scanning | Not provided | 100/300 dpi in native apps; thresholded one-bit text |
+| Multiple pages | CUPS pages, copies and collation | Multipage PDF assembled by the scanning application |
+| macOS integration | Standard print dialogs via CUPS | Image Capture via a local AirScan helper |
+| Linux integration | CUPS | SANE; confirmed in GNOME Document Scanner |
+| Intel/x86_64 and ARM64 builds | macOS and Linux | macOS and Linux |
+| Linux distro packaging | Debian/Ubuntu, Fedora/Red Hat, Arch, openSUSE, Alpine/musl; Nix recipe | Same distro flavours; Nix recipe |
+| iOS / AirPrint | Not implemented | Not provided; macOS helper is local to that Mac |
+| Windows | Not implemented | Not implemented |
+| Other printer models | Unverified | Unverified |
+
+Physical checks cover Wi-Fi printing and scanning on one Apple Silicon Mac and
+one Fedora x86_64 laptop. Other CPU/distro combinations have automated checks;
+these do not replace physical hardware tests. USB support is future work.
+
 ## Download v0.1.1
 
 **macOS:** use the [universal Installer package](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.1/dcp-j315w-cups-0.1.1-macos-universal.pkg)
