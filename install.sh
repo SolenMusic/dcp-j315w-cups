@@ -27,6 +27,7 @@ port=9100
 port_set=0
 dry_run=0
 install_deps=0
+configure_only=0
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --address|--port|--queue|--uri)
@@ -41,6 +42,7 @@ while [ "$#" -gt 0 ]; do
     --dry-run) dry_run=1; shift ;;
     --discover) discover=1; shift ;;
     --install-deps) install_deps=1; shift ;;
+    --configure-only) configure_only=1; shift ;;
     --help|-h) usage; exit 0 ;;
     *) fail "Unknown argument: $1 (use --help)." ;;
   esac
@@ -48,6 +50,7 @@ done
 
 platform=$(uname -s)
 case "$platform" in Darwin|Linux) ;; *) fail "Use this installer on macOS or Linux with CUPS 2.x." ;; esac
+[ "$configure_only" -eq 0 ] || [ "$install_deps" -eq 0 ] || fail "Use your package manager to install dependencies."
 case "$queue" in ''|-*|*[!A-Za-z0-9_.-]*) fail "Use a queue name containing letters, digits, _, . or -." ;; esac
 case "$port" in ''|*[!0-9]*) fail "Port must be a number from 1 to 65535." ;; esac
 [ "$port" -ge 1 ] && [ "$port" -le 65535 ] || fail "Port must be from 1 to 65535."
@@ -102,9 +105,14 @@ else
 fi
 ppd_path="$install_dir/DCP-J315W-CUPS.ppd"
 filter_path="$install_dir/rastertodcpj315w"
+if [ "$configure_only" -eq 1 ]; then
+  [ "$platform" = Linux ] && [ "$source_dir" = "$install_dir" ] || fail "Package configuration must run from the installed Linux driver directory."
+  [ "$install_deps" -eq 0 ] || fail "Use your package manager to install dependencies."
+fi
 previous_ppd="/etc/cups/ppd/$queue.ppd"
 [ -x "$source_dir/rastertodcpj315w" ] || fail "Build the filter with ./build.sh first."
-[ -r "$source_dir/DCP-J315W-CUPS.ppd.in" ] && [ -r "$source_dir/prepare_ppd.awk" ] && [ -r "$source_dir/uninstall.sh" ] || fail "Missing PPD template, generator or uninstaller."
+[ -r "$source_dir/DCP-J315W-CUPS.ppd.in" ] && [ -r "$source_dir/prepare_ppd.awk" ] || fail "Missing PPD template or generator."
+[ "$configure_only" -eq 1 ] || [ -r "$source_dir/uninstall.sh" ] || fail "Missing uninstaller."
 if [ "$platform" = Darwin ]; then
   codesign --verify --strict "$source_dir/rastertodcpj315w" || fail "The source filter's signature is invalid."
   lipo "$source_dir/rastertodcpj315w" -verify_arch "$(uname -m)" || fail "Download the macOS filter for your CPU architecture."
@@ -173,6 +181,7 @@ if [ "$dry_run" -eq 1 ]; then
   exit 0
 fi
 
+if [ "$configure_only" -eq 0 ]; then
 install -d -o root -g "$owner_group" -m 755 "$install_dir"
 install -o root -g "$owner_group" -m 755 "$source_dir/rastertodcpj315w" "$filter_path.next"
 mv -f "$filter_path.next" "$filter_path"
@@ -187,6 +196,12 @@ fi
 if [ "$platform" = Darwin ]; then codesign --verify --strict "$filter_path"; fi
 cupstestppd -q "$ppd_path"
 install -o root -g "$owner_group" -m 755 "$source_dir/uninstall.sh" "$install_dir/uninstall.sh"
+else
+  # The package manager owns the executable, prologues and model PPD. Only
+  # CUPS's own queue configuration may change here.
+  ppd_path="$scratch/queue.ppd"
+  cupstestppd -q "$ppd_path"
+fi
 if [ "$existing" -eq 1 ]; then
   # Retain sharing, policy, enabled state and URI; update the display name.
   if [ -n "$address" ] || [ -n "$device_uri" ]; then

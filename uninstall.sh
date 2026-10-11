@@ -3,11 +3,13 @@ set -eu
 export LC_ALL=C
 queue=DCP_J315W
 dry_run=0
+queue_only=0
 fail() { echo "ERROR: $*" >&2; exit 1; }
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --queue) [ "$#" -ge 2 ] || fail "--queue needs a value."; queue=$2; shift 2 ;;
     --dry-run) dry_run=1; shift ;;
+    --queue-only) queue_only=1; shift ;;
     --help|-h)
       echo "Usage: ./uninstall.sh [--queue NAME] [--dry-run]"
       echo "Remove a native queue; retain driver files if another queue uses them."
@@ -62,13 +64,17 @@ for other in /etc/cups/ppd/*.ppd; do
   if uses_native "$other"; then shared=1; fi
 done
 if [ "$existing" -eq 1 ]; then echo "Remove native queue: $queue"; else echo "Queue $queue is already absent."; fi
-if [ "$shared" -eq 1 ]; then
+if [ "$queue_only" -eq 1 ]; then
+  [ "$platform" = Linux ] || fail "Queue-only removal is for Linux packages."
+  echo "Driver files are managed by your package manager."
+elif [ "$shared" -eq 1 ]; then
   echo "Retain driver files: another queue uses them."
 else
   echo "Remove this driver's installed files."
 fi
 if [ "$dry_run" -eq 1 ]; then echo "Dry run complete; no files or queues changed."; exit 0; fi
 if [ "$existing" -eq 1 ]; then lpadmin -x "$queue"; fi
+if [ "$queue_only" -eq 1 ]; then echo "Native queue removal complete."; exit 0; fi
 if [ "$shared" -eq 0 ]; then
   # Remove only the files installed by this project. Leave unexpected files.
   for name in rastertodcpj315w DCP-J315W-CUPS.ppd DCP-J315W-CUPS.ppd.in uninstall.sh \
