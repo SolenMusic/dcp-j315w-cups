@@ -39,6 +39,10 @@ Physical checks cover Wi-Fi printing and scanning on one Apple Silicon Mac and
 one Fedora x86_64 laptop. Other CPU/distro combinations have automated checks;
 these do not replace physical hardware tests. USB support is future work.
 
+For a choice of printing, scanning or both on macOS, use the [combined graphical macOS installer](https://github.com/SolenMusic/dcp-j315w-installer/releases/tag/v0.1.0).
+It includes the native DCP-J315W Setup configuration/removal app. Linux downloads
+remain separate in the two component repositories.
+
 ## Download v0.1.1
 
 **macOS:** use the [universal Installer package](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.1/dcp-j315w-cups-0.1.1-macos-universal.pkg)
