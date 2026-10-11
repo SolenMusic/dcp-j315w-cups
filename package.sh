@@ -9,13 +9,15 @@ if [[ $# != 2 ]]; then
 fi
 platform=$1
 arch=$2
-case "$arch" in x86_64|arm64) ;; *) echo 'Unsupported CPU.' >&2; exit 1 ;; esac
+case "$arch" in x86_64|arm64|x86|armv6|armv6-softfloat|armv7) ;; *) echo 'Unsupported CPU.' >&2; exit 1 ;; esac
 case "$platform" in
-  macos) [[ $(uname -s) == Darwin ]]; lipo rastertodcpj315w -verify_arch "$arch" ;;
-  linux-debian|linux-fedora|linux-arch|linux-opensuse|linux-alpine)
+  macos) [[ $arch == x86_64 || $arch == arm64 ]]; [[ $(uname -s) == Darwin ]]; lipo rastertodcpj315w -verify_arch "$arch" ;;
+  linux-debian|linux-fedora|linux-arch|linux-opensuse|linux-alpine|linux-raspberrypi)
     [[ $(uname -s) == Linux ]]
     description=$(file -b rastertodcpj315w)
-    case "$arch:$description" in x86_64:*ELF*x86-64*|arm64:*ELF*aarch64*) ;; *) echo 'Wrong executable architecture.' >&2; exit 1 ;; esac
+    . "$root/linux_arch.sh"
+    detected=$(dcp_elf_arch "$root/rastertodcpj315w")
+    [[ $detected == "$arch" ]] || { echo "Wrong executable architecture: $detected (wanted $arch)." >&2; exit 1; }
     case "$platform:$description" in
       linux-alpine:*ld-musl*) ;;
       linux-alpine:*) echo 'Alpine releases must be built against musl.' >&2; exit 1 ;;
@@ -30,7 +32,7 @@ mkdir -p dist
 stage=$(mktemp -d "${TMPDIR:-/tmp}/dcp-j315w-release.XXXXXX")
 trap 'rm -rf "$stage"' EXIT
 mkdir "$stage/$name"
-for item in rastertodcpj315w install.sh install-deps.sh uninstall.sh discover.sh status.sh status_parse.awk prepare_ppd.awk DCP-J315W-CUPS.ppd.in VERSION LICENSE README.md CHANGELOG.md; do
+for item in rastertodcpj315w linux_arch.sh install.sh install-deps.sh uninstall.sh discover.sh status.sh status_parse.awk prepare_ppd.awk DCP-J315W-CUPS.ppd.in VERSION LICENSE README.md CHANGELOG.md; do
   cp "$item" "$stage/$name/$item"
 done
 cp prologue_*.bin "$stage/$name/"

@@ -110,14 +110,11 @@ if [ "$platform" = Darwin ]; then
   lipo "$source_dir/rastertodcpj315w" -verify_arch "$(uname -m)" || fail "Download the macOS filter for your CPU architecture."
 else
   description=$(file -b "$source_dir/rastertodcpj315w")
-  case "$description" in 'ELF 64-bit '*) ;; *) fail "Build a Linux executable with ./build.sh first." ;; esac
+  . "$source_dir/linux_arch.sh"
+  dcp_check_runtime "$source_dir/rastertodcpj315w" 0 || fail "Download a binary matching your CPU and float ABI."
   interpreter=$(printf '%s\n' "$description" | sed -n 's/.*interpreter \([^, ]*\).*/\1/p')
   [ -z "$interpreter" ] || [ -e "$interpreter" ] || fail "Missing ELF loader $interpreter; download the correct glibc or Alpine/musl bundle."
-  case "$(uname -m)" in
-    x86_64) case "$description" in *x86-64*) ;; *) fail "This Linux filter is not x86_64." ;; esac ;;
-    aarch64|arm64) case "$description" in *aarch64*) ;; *) fail "This Linux filter is not ARM64." ;; esac ;;
-    *) fail "Only Linux x86_64 and ARM64 targets have been validated." ;;
-  esac
+
 fi
 for mode in a4_150 a4_300 a4_600 a5_300 a5_600 a6_150 a6_300 a6_600 letter_300 letter_600; do
   header="$source_dir/prologue_$mode.bin"

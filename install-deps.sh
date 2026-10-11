@@ -25,11 +25,11 @@ else
   esac
 fi
 case "$flavour" in
-  debian) packages=(cups cups-client cups-filters ghostscript file avahi-daemon); manager=apt-get ;;
-  fedora) packages=(cups cups-client cups-filters ghostscript file avahi); manager=dnf ;;
-  arch) packages=(cups cups-filters ghostscript file avahi qpdf); manager=pacman ;;
-  opensuse) packages=(cups cups-client cups-filters ghostscript file avahi); manager=zypper ;;
-  alpine) packages=(bash cups cups-client cups-filters ghostscript file avahi); manager=apk ;;
+  debian|raspberrypi) packages=(cups cups-client cups-filters ghostscript file binutils avahi-daemon); manager=apt-get ;;
+  fedora) packages=(cups cups-client cups-filters ghostscript file binutils avahi); manager=dnf ;;
+  arch) packages=(cups cups-filters ghostscript file binutils avahi qpdf); manager=pacman ;;
+  opensuse) packages=(cups cups-client cups-filters ghostscript file binutils avahi); manager=zypper ;;
+  alpine) packages=(bash cups cups-client cups-filters ghostscript file binutils avahi); manager=apk ;;
   *) echo 'Unknown bundle flavour.' >&2; exit 1 ;;
 esac
 command -v "$manager" >/dev/null || { echo "This bundle needs $manager; download the bundle for your distribution." >&2; exit 1; }
@@ -37,7 +37,7 @@ echo "Runtime packages: ${packages[*]} ($manager)"
 if [[ $dry_run == 1 ]]; then exit 0; fi
 [[ $EUID == 0 ]] || { echo 'Run with sudo, or use --dry-run.' >&2; exit 1; }
 case "$flavour" in
-  debian) apt-get update; apt-get install -y "${packages[@]}" ;;
+  debian|raspberrypi) apt-get update; apt-get install -y "${packages[@]}" ;;
   fedora) dnf install -y "${packages[@]}" ;;
   # Arch does not support partial upgrades. Make the full upgrade explicit.
   arch) pacman -Syu --needed "${packages[@]}" ;;
