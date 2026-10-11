@@ -5,8 +5,8 @@ The driver requires a DCP-J315W on the local network and CUPS 2.x. Raw TCP port
 
 ## Verify a download
 
-The GitHub release provides `SHA256SUMS` for its archives. Inside each extracted
-archive is another `SHA256SUMS` covering its files:
+The GitHub release provides `SHA256SUMS` for its packages and archives. Manual
+tarballs also include an internal `SHA256SUMS` covering their files:
 
 ```sh
 # Linux
@@ -42,11 +42,15 @@ then run `sudo "$stage/install.sh" --address 192.0.2.10`.
 
 ## Linux
 
+Prefer the native `.deb`, `.rpm`, `.pkg.tar.zst` and Alpine 3.24+ `.apk` packages.
+Use [the native package guide](../packaging/README.md) for configuration, upgrades
+and package-manager removal. The following describes the **manual tarball alternative**.
+
 Select the tarball matching your CPU and package-manager family. ARM64 is also
 called aarch64. The Debian/Fedora/Arch/openSUSE tarballs share a portable AlmaLinux
 9 glibc build. Alpine tarballs are separately compiled against musl on Alpine 3.24.
 Do not use a glibc binary on Alpine. Downloads include distribution-specific
-dependency handling and are not `.deb`, `.rpm` or `.apk` packages.
+dependency handling; these optional tarballs are separate from the native packages.
 NixOS uses the [native recipe](NIXOS.md), not this installer.
 
 ```sh

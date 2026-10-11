@@ -48,20 +48,23 @@ remain separate in the two component repositories.
 **macOS:** use the [universal Installer package](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-macos-universal.pkg)
 for Intel and Apple Silicon. It installs the driver and attempts automatic Bonjour
 setup. The package and filter use Developer ID signatures; the released package
-is notarized and stapled. The tarballs below are an alternative for Terminal users.
+is notarized and stapled. CPU-specific macOS tarballs remain available as an alternative for Terminal users.
 
-Each download contains the native filter, printer description, Bash installer,
-uninstaller, documentation and checksums. No compilation or Python is needed to
-install a binary download.
+**Linux:** prefer the native packages below. Dependencies and driver files are
+managed by your distro's package manager. See [installation, upgrades and removal](packaging/README.md).
+On minimal Alpine systems, CUPS administration may require adding your
+administrator to `lpadmin` (for root setup: `addgroup root lpadmin`).
+Tarballs with Bash installers remain available in the release assets as a manual
+alternative. Binary installation requires no compiler or Python.
 
 | System | Intel / x86_64 | ARM64 |
 | --- | --- | --- |
 | macOS | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-macos-x86_64.tar.gz) | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-macos-arm64.tar.gz) |
-| Debian / Ubuntu | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-debian-x86_64.tar.gz) | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-debian-arm64.tar.gz) |
-| Red Hat / Fedora | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-fedora-x86_64.tar.gz) | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-fedora-arm64.tar.gz) |
-| Arch / Arch Linux ARM | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-arch-x86_64.tar.gz) | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-arch-arm64.tar.gz) |
-| openSUSE | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-opensuse-x86_64.tar.gz) | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-opensuse-arm64.tar.gz) |
-| Alpine (musl) | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-alpine-x86_64.tar.gz) | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-alpine-arm64.tar.gz) |
+| Debian / Ubuntu | [deb](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-debian-x86_64.deb) | [deb](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-debian-arm64.deb) |
+| Red Hat / Fedora | [rpm](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-fedora-x86_64.rpm) | [rpm](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-fedora-arm64.rpm) |
+| Arch / Arch Linux ARM | [pkg.tar.zst](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-arch-x86_64.pkg.tar.zst) | [pkg.tar.zst](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-arch-arm64.pkg.tar.zst) |
+| openSUSE | [rpm](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-opensuse-x86_64.rpm) | [rpm](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-opensuse-arm64.rpm) |
+| Alpine 3.24+ (musl) | [apk](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-alpine-x86_64.apk) | [apk](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-alpine-arm64.apk) |
 
 **NixOS:** use the [native recipe and declarative configuration example](docs/NIXOS.md).
 
@@ -81,6 +84,9 @@ installer's payload. The `.pkg` is the recommended macOS download and carries
 the stapled notarization ticket. See [macOS Installer signing and notarization](docs/MACOS-RELEASE.md).
 
 ## Install
+
+For Linux native packages, follow [the package guide](packaging/README.md).
+The following commands are for the **optional tarball downloads**.
 
 Extract the download and open Terminal in the extracted folder. Use the printer's
 actual network address in place of the documentation example:
@@ -159,13 +165,13 @@ feedback is welcome.
 
 | Distribution / CPU | Download |
 | --- | --- |
-| Raspberry Pi OS / Raspbian — ARMv6 hard-float | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-raspberrypi-armv6.tar.gz) |
-| Debian armel — ARMv6 soft-float | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-debian-armv6-softfloat.tar.gz) |
-| Debian armhf — ARMv7 | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-debian-armv7.tar.gz) |
-| Debian — 32-bit x86 | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-debian-x86.tar.gz) |
-| Alpine — ARMv6 hard-float | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-alpine-armv6.tar.gz) |
-| Alpine — ARMv7 | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-alpine-armv7.tar.gz) |
-| Alpine — 32-bit x86 | [Download](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-linux-alpine-x86.tar.gz) |
+| Raspberry Pi OS / Raspbian — ARMv6 hard-float | [deb](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-raspberrypi-armv6.deb) |
+| Debian armel — ARMv6 soft-float | [deb](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-debian-armv6-softfloat.deb) |
+| Debian armhf — ARMv7 | [deb](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-debian-armv7.deb) |
+| Debian — 32-bit x86 | [deb](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-debian-x86.deb) |
+| Alpine — ARMv6 hard-float | [apk](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-alpine-armv6.apk) |
+| Alpine — ARMv7 | [apk](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-alpine-armv7.apk) |
+| Alpine — 32-bit x86 | [apk](https://github.com/SolenMusic/dcp-j315w-cups/releases/download/v0.1.2/dcp-j315w-cups-0.1.2-1-alpine-x86.apk) |
 
 
 These target combinations are built separately for printing and scanning:
